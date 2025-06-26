@@ -149,11 +149,11 @@ public static class ShaderPackageUpdate
     {
         var tokens = instruction.Split(':');
         var key = new Name(tokens[0]);
-        var defaultValue = new Name(tokens[1]);
+        var defaultValue = key + tokens[1];
         var alternateValues = new Dictionary<Name, Dictionary<ProgramType, Dictionary<int, int>>>();
         foreach (var altToken in tokens.AsSpan(2)) {
             var subTokens = altToken.Split(',');
-            var value = new Name(subTokens[0]);
+            var value = key + subTokens[0];
             var replacements = new Dictionary<ProgramType, Dictionary<int, int>>();
             alternateValues.Add(value, replacements);
             foreach (var subToken in subTokens.AsSpan(1)) {
