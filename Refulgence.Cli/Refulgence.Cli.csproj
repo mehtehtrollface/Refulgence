@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <LangVersion>default</LangVersion>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <IsPackable>false</IsPackable>
+        <Version>1.0.0.0</Version>
+        <AssemblyName>Refulgence</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Refulgence.Xiv\Refulgence.Xiv.csproj" />
+        <ProjectReference Include="..\RefulgenceCore\RefulgenceCore.csproj" />
+    </ItemGroup>
+
+</Project>

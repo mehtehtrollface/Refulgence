@@ -1,0 +1,14 @@
+namespace Refulgence.Dxbc.ResourceDefinition;
+
+public enum ResourceReturnType : uint
+{
+    Undefined = 0,
+    UNorm     = 1,
+    SNorm     = 2,
+    SInt      = 3,
+    UInt      = 4,
+    Float     = 5,
+    Mixed     = 6,
+    Double    = 7,
+    Continued = 8,
+}

@@ -1,0 +1,32 @@
+namespace Refulgence.Dxbc.Signature;
+
+public enum SystemValueType : uint
+{
+    None                       = 0,
+    Position                   = 1,
+    ClipDistance               = 2,
+    CullDistance               = 3,
+    RenderTargetArrayIndex     = 4,
+    ViewportArrayIndex         = 5,
+    VertexID                   = 6,
+    PrimitiveID                = 7,
+    InstanceID                 = 8,
+    IsFrontFace                = 9,
+    SampleIndex                = 10,
+    FinalQuadEdgeTessFactor    = 11,
+    FinalQuadInsideTessFactor  = 12,
+    FinalTriEdgeTessFactor     = 13,
+    FinalTriInsideTessFactor   = 14,
+    FinalLineDetailTessFactor  = 15,
+    FinalLineDensityTessFactor = 16,
+    Barycentrics               = 23,
+    ShadingRate,
+    CullPrimitive,
+    Target            = 64,
+    Depth             = 65,
+    Coverage          = 66,
+    DepthGreaterEqual = 67,
+    DepthLessEqual    = 68,
+    StencilRef        = 69,
+    InnerCoverage     = 70,
+}
