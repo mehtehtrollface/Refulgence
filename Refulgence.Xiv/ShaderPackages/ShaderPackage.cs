@@ -37,7 +37,7 @@ public sealed class ShaderPackage(GraphicsPlatform graphicsPlatform) : IBytesCon
     public          ShaderKey                    SubViewKey1  = new(Name.Empty, Name.Empty);
 
     public readonly IndexedList<uint, RenderNode> RenderNodes         = new(16, node => node.PrimarySelector);
-    public readonly Dictionary<uint, int>         RenderNodeSelectors = new(128);
+    public readonly OrderedDictionary<uint, int>  RenderNodeSelectors = new(128);
 
     public IEnumerable<(ProgramType ProgramType, List<Shader> Shaders)> GetShaders()
     {
