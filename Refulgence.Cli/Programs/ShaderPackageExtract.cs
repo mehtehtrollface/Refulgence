@@ -43,6 +43,8 @@ public static class ShaderPackageExtract
         } else {
             File.WriteAllBytes(Path.Combine(outputDirectory, baseName + ".dxbc"), shader.ShaderBlob);
         }
+
+        Console.Error.WriteLine($"Extracted shader {baseName}");
     }
 
     public static (ProgramType ProgramType, uint Index) ParseShaderId(string shaderId)

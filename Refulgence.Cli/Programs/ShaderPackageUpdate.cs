@@ -96,6 +96,7 @@ public static class ShaderPackageUpdate
         }
 
         shpk.MaterialParameters.Add(param);
+        Console.Error.WriteLine($"Added material parameter {param.Name}");
         if (shpk.MaterialParametersDefaults is null) {
             return;
         }
@@ -143,6 +144,8 @@ public static class ShaderPackageUpdate
 
                 break;
         }
+
+        Console.Error.WriteLine($"Set default for material parameter {param.Name}");
     }
 
     private static void AddMaterialKey(ShaderPackage shpk, string instruction)
@@ -237,6 +240,8 @@ public static class ShaderPackageUpdate
                 shpk.RenderNodeSelectors.Add(unchecked(selector + value.Crc32 * multiplier), newIndex);
             }
         }
+
+        Console.Error.WriteLine($"Added material key {key}");
     }
 
     private static void ConfigureResource(IndexedList<Name, ShaderResource> resources, string instruction)
@@ -244,6 +249,8 @@ public static class ShaderPackageUpdate
         var (name, type) = instruction.SplitOnce(':');
         var resource = resources[name];
         resource.Slot = unchecked((ushort)short.Parse(type ?? string.Empty));
+
+        Console.Error.WriteLine($"Configured resource {name}");
     }
 
     private static void ReplaceOrAddShader(ShaderPackage shpk, string shaderId, string fileName)
@@ -253,8 +260,10 @@ public static class ShaderPackageUpdate
         var shaders = shpk.GetShadersByProgramType(programType);
         if (index == shaders.Count) {
             shaders.Add(shader);
+            Console.Error.WriteLine($"Added shader {shaderId}");
         } else if (index < shaders.Count) {
             shaders[(int)index] = shader;
+            Console.Error.WriteLine($"Replaced shader {shaderId}");
         } else {
             throw new ArgumentOutOfRangeException($"Invalid {programType} index {index} (valid range: 0..{shaders.Count} inclusive)");
         }
