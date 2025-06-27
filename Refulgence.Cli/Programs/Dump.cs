@@ -15,25 +15,17 @@ public static class Dump
 {
     public static int Run(string inputFileName)
     {
-        Action dump;
-        using (var mmio = MmioMemoryManager.CreateFromFile(inputFileName, access: MemoryMappedFileAccess.Read)) {
-            var mmioSpan = (ReadOnlySpan<byte>)mmio.GetSpan();
-            var magic = MemoryMarshal.Read<InlineByteString<uint>>(mmioSpan);
-            if (magic == "DXBC"u8) {
-                var dxbc = DxContainer.FromBytes(mmioSpan);
-                dump = () => dxbc.Dump(Console.Out);
-            } else if (magic == "ShCd"u8) {
-                var shcd = Shader.FromShaderCodeBytes(mmioSpan);
-                dump = () => DumpShaderCode(shcd);
-            } else if (magic == "ShPk"u8) {
-                var shpk = ShaderPackage.FromShaderPackageBytes(mmioSpan);
-                dump = () => DumpShaderPackage(shpk);
-            } else {
-                throw new InvalidDataException($"Unrecognized magic number {magic}");
-            }
+        var fileBytes = File.ReadAllBytes(inputFileName);
+        var magic = MemoryMarshal.Read<InlineByteString<uint>>(fileBytes);
+        if (magic == "DXBC"u8) {
+            DxContainer.FromBytes(fileBytes).Dump(Console.Out);
+        } else if (magic == "ShCd"u8) {
+            DumpShaderCode(Shader.FromShaderCodeBytes(fileBytes));
+        } else if (magic == "ShPk"u8) {
+            DumpShaderPackage(ShaderPackage.FromShaderPackageBytes(fileBytes));
+        } else {
+            throw new InvalidDataException($"Unrecognized magic number {magic}");
         }
-
-        dump();
 
         return 0;
     }

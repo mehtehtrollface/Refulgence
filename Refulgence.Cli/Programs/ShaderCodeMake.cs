@@ -10,14 +10,13 @@ public static class ShaderCodeMake
 {
     public static int Run(string inputFileName, string outputFileName)
     {
-        using var mmio = MmioMemoryManager.CreateFromFile(inputFileName, access: MemoryMappedFileAccess.Read);
-        var mmioSpan = (ReadOnlySpan<byte>)mmio.GetSpan();
-        var magic = MemoryMarshal.Read<InlineByteString<uint>>(mmioSpan);
+        var fileBytes = File.ReadAllBytes(inputFileName);
+        var magic = MemoryMarshal.Read<InlineByteString<uint>>(fileBytes);
         Shader shader;
         if (magic == "DXBC"u8) {
-            shader = Shader.FromDirectX11ShaderBlob(mmioSpan.ToArray());
+            shader = Shader.FromDirectX11ShaderBlob(fileBytes);
         } else if (magic == "ShCd"u8) {
-            shader = Shader.FromShaderCodeBytes(mmioSpan);
+            shader = Shader.FromShaderCodeBytes(fileBytes);
         } else {
             throw new InvalidDataException($"Unrecognized magic number {magic}");
         }

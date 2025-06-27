@@ -12,10 +12,7 @@ public static class ShaderPackageExtract
 
     public static int Run(string inputFileName, ReadOnlySpan<string> shaderIds, bool asShaderCode)
     {
-        ShaderPackage shpk;
-        using (var mmio = MmioMemoryManager.CreateFromFile(inputFileName, access: MemoryMappedFileAccess.Read)) {
-            shpk = ShaderPackage.FromShaderPackageBytes(mmio.GetSpan());
-        }
+        var shpk = ShaderPackage.FromShaderPackageBytes(File.ReadAllBytes(inputFileName));
 
         var outputDirectory = Path.ChangeExtension(inputFileName, null);
         Directory.CreateDirectory(outputDirectory);

@@ -15,16 +15,15 @@ public static class RoundTripTest
 {
     public static int Run(string inputFileName, string outputFileName)
     {
-        using var mmio = MmioMemoryManager.CreateFromFile(inputFileName, access: MemoryMappedFileAccess.Read);
-        var mmioSpan = (ReadOnlySpan<byte>)mmio.GetSpan();
-        var magic = MemoryMarshal.Read<InlineByteString<uint>>(mmioSpan);
+        var fileBytes = File.ReadAllBytes(inputFileName);
+        var magic = MemoryMarshal.Read<InlineByteString<uint>>(fileBytes);
         byte[] reconstructed;
         if (magic == "DXBC"u8) {
-            reconstructed = TestDxContainer(mmioSpan);
+            reconstructed = TestDxContainer(fileBytes);
         } else if (magic == "ShCd"u8) {
-            reconstructed = TestShaderCode(mmioSpan);
+            reconstructed = TestShaderCode(fileBytes);
         } else if (magic == "ShPk"u8) {
-            reconstructed = TestShaderPackage(mmioSpan);
+            reconstructed = TestShaderPackage(fileBytes);
         } else {
             throw new InvalidDataException($"Unrecognized magic number {magic}");
         }
@@ -33,7 +32,7 @@ public static class RoundTripTest
             File.WriteAllBytes(outputFileName, reconstructed);
         }
 
-        return mmioSpan.SequenceEqual(reconstructed) ? 0 : 1;
+        return fileBytes.SequenceEqual(reconstructed) ? 0 : 1;
     }
 
     private static byte[] TestDxContainer(ReadOnlySpan<byte> span)
