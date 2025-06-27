@@ -13,10 +13,7 @@ public static class ShaderPackageUpdate
 {
     public static int Run(string inputFileName, string outputFileName, ReadOnlySpan<string> instructions)
     {
-        ShaderPackage shpk;
-        using (var mmio = MmioMemoryManager.CreateFromFile(inputFileName, access: MemoryMappedFileAccess.Read)) {
-            shpk = ShaderPackage.FromShaderPackageBytes(mmio.GetSpan());
-        }
+        var shpk = ShaderPackage.FromShaderPackageBytes(File.ReadAllBytes(inputFileName));
 
         var offset = 0;
         while (offset < instructions.Length) {
@@ -271,13 +268,12 @@ public static class ShaderPackageUpdate
 
     private static Shader ReadShader(string fileName)
     {
-        using var mmio = MmioMemoryManager.CreateFromFile(fileName, access: MemoryMappedFileAccess.Read);
-        var mmioSpan = (ReadOnlySpan<byte>)mmio.GetSpan();
-        var magic = MemoryMarshal.Read<InlineByteString<uint>>(mmioSpan);
+        var fileBytes = File.ReadAllBytes(fileName);
+        var magic = MemoryMarshal.Read<InlineByteString<uint>>(fileBytes);
         if (magic == "DXBC"u8) {
-            return Shader.FromDirectX11ShaderBlob(mmioSpan.ToArray());
+            return Shader.FromDirectX11ShaderBlob(fileBytes);
         } else if (magic == "ShCd"u8) {
-            return Shader.FromShaderCodeBytes(mmioSpan);
+            return Shader.FromShaderCodeBytes(fileBytes);
         } else {
             throw new InvalidDataException($"Unrecognized magic number {magic}");
         }
