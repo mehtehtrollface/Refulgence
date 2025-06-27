@@ -6,7 +6,9 @@ var argIndex = 0;
 return GetArg("verb").ToLowerInvariant() switch
 {
     "dump" => Dump.Run(GetArg("input file name")),
-    "roundtrip" => RoundTripTest.Run(GetArg("input file name"), GetArg("output file name")),
+    "roundtrip" => RoundTripTest.Run(
+        GetArg("input file name"), TryGetArg(out var outputFileName, "output file name") ? outputFileName : string.Empty
+    ),
     "shcd.make" or "mkshcd" => ShaderCodeMake.Run(GetArg("input file name"), GetArg("output file name")),
     "shcd.extract" or "unshcd" => ShaderCodeExtract.Run(GetArg("input file name"), GetArg("output file name")),
     "shpk.extract" or "unshpk" => ShaderPackageExtract.Run(GetArg("input file name"), GetArgRest(), false),

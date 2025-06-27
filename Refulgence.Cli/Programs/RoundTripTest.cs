@@ -29,7 +29,9 @@ public static class RoundTripTest
             throw new InvalidDataException($"Unrecognized magic number {magic}");
         }
 
-        File.WriteAllBytes(outputFileName, reconstructed);
+        if (!string.IsNullOrEmpty(outputFileName)) {
+            File.WriteAllBytes(outputFileName, reconstructed);
+        }
 
         return mmioSpan.SequenceEqual(reconstructed) ? 0 : 1;
     }
