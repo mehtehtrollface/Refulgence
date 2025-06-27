@@ -147,7 +147,7 @@ public sealed class Shader(GraphicsPlatform platform, ProgramType programType) :
         var textureSamplers = new Dictionary<uint, SharedSet<uint, ulong>>(Textures.Count);
         var samplerTextures = new Dictionary<uint, SharedSet<uint, ulong>>(Samplers.Count);
         foreach (var instruction in shdr.Instructions) {
-            if (!instruction.OpCode.Type.HasStandardOperandFormat()) {
+            if (instruction.OpCode.Type.GetInfo().Flags.HasFlag(OpCodeFlags.CustomOperands)) {
                 continue;
             }
 

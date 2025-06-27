@@ -48,22 +48,47 @@ public ref struct Instruction(OpCodeToken opCode, ReadOnlySpan<ExtendedOpCodeTok
             return ToStringCustomData();
         }
 
-        if (OpCode.Type.IsDeclaration()) {
-            return ToStringDcl();
-        }
-
-        if (OpCode.Type is OpCodeType.InterfaceCall) {
-            return ToStringInterfaceCall();
+        var opCodeInfo = OpCodeInfo.ForOpCode(OpCode.Type);
+        if (opCodeInfo.Flags.HasFlag(OpCodeFlags.CustomOperands)) {
+            return ToStringCustomOperands();
         }
 
         var sb = new StringBuilder();
-        sb.Append(OpCode.Type.ToMnemonic());
+        sb.Append(OpCodeInfo.ForOpCode(OpCode.Type).Mnemonic);
         if (OpCode.Saturate) {
             sb.Append("_sat");
         }
 
-        if (OpCode.Type.HasTest()) {
+        if (opCodeInfo.Flags.HasFlag(OpCodeFlags.HasTest)) {
             sb.Append(OpCode.Test.ToSuffix());
+        }
+
+        if (OpCode.Type is OpCodeType.ResInfo or OpCodeType.SampleInfo) {
+            switch (OpCode.ResInfoReturnType) {
+                case ResInfoReturnType.UInt:
+                    sb.Append("_uint");
+                    break;
+                case ResInfoReturnType.RcpFloat:
+                    sb.Append("_rcpFloat");
+                    break;
+            }
+        } else if (OpCode.Type is OpCodeType.Sync) {
+            var flags = OpCode.SyncFlags;
+            if (flags.HasFlag(SyncFlags.UnorderedAccessViewMemoryGlobal)) {
+                sb.Append("_uglobal");
+            }
+
+            if (flags.HasFlag(SyncFlags.UnorderedAccessViewMemoryGroup)) {
+                sb.Append("_ugroup");
+            }
+
+            if (flags.HasFlag(SyncFlags.ThreadGroupSharedMemory)) {
+                sb.Append("_g");
+            }
+
+            if (flags.HasFlag(SyncFlags.ThreadsInGroup)) {
+                sb.Append("_t");
+            }
         }
 
         if (TryGetExtension(ExtendedOpCodeType.SampleControls, out var sampleControls)) {
@@ -102,12 +127,12 @@ public ref struct Instruction(OpCodeToken opCode, ReadOnlySpan<ExtendedOpCodeTok
         return sb.ToString();
     }
 
-    private readonly string ToStringDcl()
+    private readonly string ToStringCustomOperands()
     {
         var sb = new StringBuilder();
         int offset;
 
-        sb.Append(OpCode.Type.ToMnemonic());
+        sb.Append(OpCodeInfo.ForOpCode(OpCode.Type).Mnemonic);
         switch (OpCode.Type) {
             case OpCodeType.DclGlobalFlags:
                 var first = true;
@@ -141,12 +166,6 @@ public ref struct Instruction(OpCodeToken opCode, ReadOnlySpan<ExtendedOpCodeTok
             case OpCodeType.DclSampler:
                 operand = Operand.Decode(Operands, 0, out offset);
                 sb.Append($" {operand.ToString()}, mode_{OpCode.SamplerMode.ToLowerString()}");
-                break;
-            case OpCodeType.DclInput:
-            case OpCodeType.DclOutput:
-            case OpCodeType.DclResourceRaw:
-                operand = Operand.Decode(Operands, 0, out offset);
-                sb.Append($" {operand.ToString()}");
                 break;
             case OpCodeType.DclInputSiv:
             case OpCodeType.DclInputSgv:
@@ -287,6 +306,10 @@ public ref struct Instruction(OpCodeToken opCode, ReadOnlySpan<ExtendedOpCodeTok
                 operand = Operand.Decode(Operands, 0, out offset);
                 sb.Append($" {operand.ToString()}, {Operands[offset]}, {Operands[offset + 1]}");
                 break;
+            case OpCodeType.InterfaceCall:
+                operand = Operand.Decode(Operands, 1, out offset);
+                sb.Append($" {operand.ToString()}[{Operands[0]}]");
+                break;
             default:
                 sb.Append(" <unknown operands>");
                 foreach (var token in Operands) {
@@ -301,15 +324,4 @@ public ref struct Instruction(OpCodeToken opCode, ReadOnlySpan<ExtendedOpCodeTok
 
     private readonly string ToStringCustomData()
         => "custom_data <unknown operands>";
-
-    private readonly string ToStringInterfaceCall()
-    {
-        var sb = new StringBuilder();
-
-        sb.Append(OpCode.Type.ToMnemonic());
-        var operand = Operand.Decode(Operands, 1, out var offset);
-        sb.Append($" {operand.ToString()}[{Operands[0]}]");
-
-        return sb.ToString();
-    }
 }

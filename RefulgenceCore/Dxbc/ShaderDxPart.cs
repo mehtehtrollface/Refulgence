@@ -36,12 +36,13 @@ public sealed class ShaderDxPart : DxPart
         writer.WriteLine($"    {ProgramType.ToAbbreviation()}_{ProgramVersion >> 4}_{ProgramVersion & 0xF}");
         var indent = 0;
         foreach (var instruction in Instructions) {
-            if (instruction.OpCode.Type.IsBlockEnd()) {
+            var opCodeInfo = instruction.OpCode.Type.GetInfo();
+            if (opCodeInfo.Flags.HasFlag(OpCodeFlags.BlockEnd)) {
                 --indent;
             }
 
             writer.WriteLine($"    {new string(' ', 2 * indent)}{instruction.ToString()}");
-            if (instruction.OpCode.Type.IsBlockStart()) {
+            if (opCodeInfo.Flags.HasFlag(OpCodeFlags.BlockStart)) {
                 ++indent;
             }
         }
