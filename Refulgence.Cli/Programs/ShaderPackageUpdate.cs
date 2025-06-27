@@ -78,18 +78,20 @@ public static class ShaderPackageUpdate
         var tokens = instruction.Split(':');
         MaterialParameter param;
         if (tokens[1].EndsWith("x", StringComparison.OrdinalIgnoreCase)) {
-            param = new(tokens[0], (ushort)(ushort.Parse(tokens[1].AsSpan(^1)) << 4), (ushort)(ushort.Parse(tokens[2]) << 2));
+            param = new(
+                tokens[0], (ushort)(ushort.Parse(tokens[1].Substring(0, tokens[1].Length - 1)) << 4), (ushort)(ushort.Parse(tokens[2]) << 2)
+            );
         } else if (tokens[1].EndsWith("y", StringComparison.OrdinalIgnoreCase)) {
             param = new(
-                tokens[0], (ushort)((ushort.Parse(tokens[1].AsSpan(^1)) << 4) | 0x4), (ushort)(ushort.Parse(tokens[2]) << 2)
+                tokens[0], (ushort)((ushort.Parse(tokens[1].Substring(0, tokens[1].Length - 1)) << 4) | 0x4), (ushort)(ushort.Parse(tokens[2]) << 2)
             );
         } else if (tokens[1].EndsWith("z", StringComparison.OrdinalIgnoreCase)) {
             param = new(
-                tokens[0], (ushort)((ushort.Parse(tokens[1].AsSpan(^1)) << 4) | 0x8), (ushort)(ushort.Parse(tokens[2]) << 2)
+                tokens[0], (ushort)((ushort.Parse(tokens[1].Substring(0, tokens[1].Length - 1)) << 4) | 0x8), (ushort)(ushort.Parse(tokens[2]) << 2)
             );
         } else if (tokens[1].EndsWith("w", StringComparison.OrdinalIgnoreCase)) {
             param = new(
-                tokens[0], (ushort)((ushort.Parse(tokens[1].AsSpan(^1)) << 4) | 0xC), (ushort)(ushort.Parse(tokens[2]) << 2)
+                tokens[0], (ushort)((ushort.Parse(tokens[1].Substring(0, tokens[1].Length - 1)) << 4) | 0xC), (ushort)(ushort.Parse(tokens[2]) << 2)
             );
         } else {
             param = new(tokens[0], ushort.Parse(tokens[1]), ushort.Parse(tokens[2]));
