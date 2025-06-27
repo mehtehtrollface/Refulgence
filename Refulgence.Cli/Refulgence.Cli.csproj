@@ -17,8 +17,8 @@
         <ProjectReference Include="..\RefulgenceCore\RefulgenceCore.csproj" />
     </ItemGroup>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="xcopy &quot;$(ProjectDir)bin\Debug\net9.0\Refulgence*&quot; &quot;$(SolutionDir)Bin\&quot; /y" />
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+      <Exec Command="xcopy &quot;$(ProjectDir)bin\Debug\net9.0\Refulgence*&quot; &quot;$(SolutionDir)Bin\&quot; /y" ContinueOnError="true" />
     </Target>
 
 </Project>
